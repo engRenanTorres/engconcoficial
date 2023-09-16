@@ -31,8 +31,8 @@ public class UserController : ControllerBase
   {
     _logger.LogInformation("GetUsers has been called.");
     User? user = await _userService.GetUser(id);
-    if (user == null) return NotFound("User id: " + id + "not found");
-    return Ok(user);
+    if (user == null) return DefaultNotFound(id);
+        return Ok(user);
   }
 
   [HttpGet("")]
@@ -49,12 +49,12 @@ public class UserController : ControllerBase
     _logger.LogInformation("PatchUsers has been called.");
     string? userId = User?.FindFirst("userId")?.Value;
 
-    if (userId == null) return NotFound("User id: " + userId + "not found");
+    if (userId == null) return DefaultNotFound(int.Parse(userId));
 
-    User? user = await _userService.PatchUser(userId, updateUserDTO);
-    if (user == null) return NotFound("User id: " + userId + "not found");
+        User? user = await _userService.PatchUser(userId, updateUserDTO);
+    if (user == null) return DefaultNotFound(int.Parse(userId));
 
-    return Ok(user);
+        return Ok(user);
   }
 
   [HttpDelete("{id}")]
@@ -66,7 +66,7 @@ public class UserController : ControllerBase
 
     if (deleteUser == null)
     {
-      return NotFound("User id: " + id + "not found");
+      return DefaultNotFound(id);
     }
     if (deleteUser.Value)
     {
@@ -74,4 +74,8 @@ public class UserController : ControllerBase
     };
     throw new Exception("Error to delete User");
   }
+    public NotFoundObjectResult DefaultNotFound (int id)
+    {
+        return NotFound("User id: " + id + " not found");
+    }
 }

@@ -1,4 +1,3 @@
-using DotnetAPI.Data.Repositories;
 using DotnetAPI.DTOs;
 using DotnetAPI.Models;
 using DotnetAPI.Helpers;
@@ -14,7 +13,7 @@ namespace DotnetAPI.Controllers;
 public class AuthController : ControllerBase
 {
   private readonly IUserService _userService;
-  private readonly IAuthService _AuthService;
+  private readonly IAuthService _authService;
   private readonly ILogger<AuthController> _logger;
   private readonly AuthHelper _authHelper;
   public AuthController(
@@ -27,7 +26,7 @@ public class AuthController : ControllerBase
     _userService = userService;
     _logger = logger;
     _authHelper = new(configuration);
-    _AuthService = authService;
+    _authService = authService;
   }
 
   [AllowAnonymous]
@@ -35,11 +34,11 @@ public class AuthController : ControllerBase
   [ProducesResponseType(StatusCodes.Status201Created)]
   public async Task<ActionResult<User>> Register([FromBody] CreateUserDTO createUserDTO)
   {
-    User? user = await _AuthService.Register(createUserDTO);
+    User? user = await _authService.Register(createUserDTO);
     // _constext.SaveChanges return de number of rows that were modified.
     if (user != null)
     {
-      return Created("CRIADO!", user);
+      return CreatedAtAction("AuthController", user);
     }
 
     throw new Exception("Error to Add this User");
@@ -51,7 +50,7 @@ public class AuthController : ControllerBase
   [ProducesResponseType(StatusCodes.Status400BadRequest)]
   public async Task<ActionResult<Dictionary<string, string>>> Login([FromBody] LoginDTO loginDTO)
   {
-    var token = await _AuthService.Login(loginDTO);
+    var token = await _authService.Login(loginDTO);
     if (token == null) return BadRequest("Invalid email or password.");
     return Ok(new Dictionary<string, string>{
       {"token", token},
@@ -67,7 +66,7 @@ public class AuthController : ControllerBase
     User? user = await _userService.GetUser(int.Parse(authUserId));
     if (user == null) return BadRequest("User does not exist");
 
-    var token = _AuthService.RefreshToken(authUserId, user.Role);
+    var token = _authService.RefreshToken(authUserId, user.Role);
     if (token == null) return NotFound();
     return Ok(new Dictionary<string, string>{
       {"token", token},
