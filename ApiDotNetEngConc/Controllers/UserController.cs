@@ -49,12 +49,12 @@ public class UserController : ControllerBase
     _logger.LogInformation("PatchUsers has been called.");
     string? userId = User?.FindFirst("userId")?.Value;
 
-    if (userId == null) return DefaultNotFound(int.Parse(userId));
+    if (userId == null) return DefaultNotFound(0);
 
-        User? user = await _userService.PatchUser(userId, updateUserDTO);
+    User? user = await _userService.PatchUser(userId, updateUserDTO);
     if (user == null) return DefaultNotFound(int.Parse(userId));
 
-        return Ok(user);
+    return Ok(user);
   }
 
   [HttpDelete("{id}")]

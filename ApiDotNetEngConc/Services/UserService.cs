@@ -8,10 +8,10 @@ namespace DotnetAPI.Services;
 
 public class UserService : IUserService
 {
-  private readonly ILogger<UserService> _logger;
+  private readonly ILogger<IUserService> _logger;
   private readonly IUserRepository _userRepository;
 
-  public UserService(ILogger<UserService> logger, IUserRepository userRepository)
+  public UserService(ILogger<IUserService> logger, IUserRepository userRepository)
   {
     _logger = logger;
     _userRepository = userRepository;

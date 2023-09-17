@@ -213,8 +213,6 @@ namespace DotnetAPITests.Controllers
             httpContext.User = userClaims;
             _authController.ControllerContext.HttpContext = httpContext;
 
-            var authUserId = "1";
-
             A.CallTo(() => _userService.GetUser(1)).Returns(Task.FromResult<User?>(null)); 
 
             var result = await _authController.RefreshToken();

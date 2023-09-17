@@ -25,25 +25,23 @@ public class QuestionController : ControllerBase
     _logger = logger;
     _questionService = questionService;
   }
+
   [HttpPost("")]
   public async Task<ActionResult<Question>> CreateQuestion(CreateQuestionDTO questionDTO)
   {
     _logger.LogInformation("CreateQuestion has been called.");
-    if (!ModelState.IsValid)
-    {
-      return BadRequest("Missing arguments");
-    }
 
     if (questionDTO == null) return BadRequest("Question data is null.");
     string? userId = User?.FindFirst("userId")?.Value;
-    if (userId == null) return BadRequest("Please log a user");
+    if (userId == null) return NotFound("Please log a user");
     Question? question =
       await _questionService.CreateQuestion(questionDTO, userId);
     return question != null ?
-      Ok(question) :
-      BadRequest("Question has Not been Created");
+    CreatedAtAction("QuestionController",question) :
+    BadRequest("Question has Not been Created");
 
   }
+
   [AllowAnonymous]
   [HttpGet("{id}")]
   public async Task<ActionResult<Question>> GetQuestion(int id)
