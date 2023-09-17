@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -141,6 +142,137 @@ namespace DotnetAPITests.Controllers
             badRequestResult?.StatusCode.Should().Be(400);
 
             badRequestResult?.Value.Should().Be("Question has Not been Created");
+        }
+
+
+        [Fact]
+        public async Task GetQuestion_ReturnQuestion()
+        {
+            A.CallTo(() => _questionService.GetQuestion(1)).Returns(Task.FromResult<Question?>(_question));
+
+            var result = await _questionController.GetQuestion(1);
+
+            result.Result.Should().BeOfType<OkObjectResult>();
+            var createdResult = result.Result as OkObjectResult;
+
+            createdResult?.StatusCode.Should().Be(StatusCodes.Status200OK);
+
+            createdResult?.Value.Should().BeSameAs(_question);
+        }
+
+        [Fact]
+        public async Task GetQuestion_NotFoundQuestion_ThrowsNotFound()
+        {
+            A.CallTo(() => _questionService.GetQuestion(1)).Returns(Task.FromResult<Question?>(null));
+
+            var actionResult = await _questionController.GetQuestion(1);
+
+            actionResult.Result.Should().NotBeNull();
+            actionResult.Result.Should().BeOfType<NotFoundObjectResult>();
+            var badRequestResult = actionResult.Result as NotFoundObjectResult;
+
+            badRequestResult?.StatusCode.Should().Be(404);
+
+            badRequestResult?.Value.Should().Be("Question id: 1 not found");
+        }
+
+        [Fact]
+        public async Task GetQuestions_ReturnQuesitons()
+        {
+            var questions = new List<Question>
+            {
+                _question
+            };
+            A.CallTo(() => _questionService.GetAllQuestions()).Returns(Task.FromResult<IEnumerable<Question>>(questions));
+
+            var result = await _questionController.GetQuestions();
+
+            result.Result.Should().BeOfType<OkObjectResult>();
+            var createdResult = result.Result as OkObjectResult;
+
+            createdResult?.StatusCode.Should().Be(StatusCodes.Status200OK);
+
+            createdResult?.Value.Should().BeSameAs(questions);
+        }
+
+        [Fact]
+        public async Task PatchUser_ReturnUser()
+        {
+            var newUserData = new UpdateQuestionDTO();
+            /*var authUserId = "1";
+            var httpContext = new DefaultHttpContext();
+            var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+            {
+            new Claim("UserId", authUserId)
+            }));
+            httpContext.User = userClaims;
+            _userController.ControllerContext.HttpContext = httpContext;*/
+
+
+            A.CallTo(() => _questionService.PatchQuestion(1, newUserData))
+                .Returns(Task.FromResult<Question?>(_question));
+
+            var result = await _questionController.PatchQuestion(1,newUserData);
+
+            result.Result.Should().BeOfType<OkObjectResult>();
+            var createdResult = result.Result as OkObjectResult;
+
+            createdResult?.StatusCode.Should().Be(StatusCodes.Status200OK);
+
+            createdResult?.Value.Should().BeSameAs(_question);
+        }
+
+        [Fact]
+        public async Task DeleteQuestion_ReturnNoContent()
+        {
+            var authUserId = 1;
+
+            A.CallTo(() => _questionService.DeleteQuestion(1))                
+                .Returns(true);
+
+            var result = await _questionController.DeleteQuestion(authUserId);
+
+
+            var createdResult = result as NoContentResult;
+
+            createdResult?.StatusCode.Should().Be(StatusCodes.Status204NoContent);
+        }
+
+        [Fact]
+        public async Task DeleteQuestion_QuestionNotFound_ReturnsNotFound()
+        {
+            // Arrange
+            A.CallTo(() => _questionService.DeleteQuestion(1))
+                .Throws(new WarningException());
+            // Act
+            var result = await _questionController.DeleteQuestion(1);
+
+            // Assert
+            result.Should().BeOfType<NotFoundObjectResult>(); 
+            var notFoundResult = (NotFoundObjectResult)result;
+
+            notFoundResult.StatusCode.Should().Be(404); 
+
+            notFoundResult.Value.Should().Be("Question id: 1 not found"); 
+        }
+
+        [Fact]
+        public async Task DeleteQuestion_ExceptionOccurred_ReturnsInternalServerError()
+        {
+            A.CallTo(() => _questionService.DeleteQuestion(1))
+                .Throws(new Exception("Test exception"));
+
+            try
+            {
+                var result = await _questionController.DeleteQuestion(1);
+
+            } catch (Exception result)
+            {
+                result.Should().BeOfType<Exception>();
+                result.Message.Should()
+                    .Be("Error to delete Question");
+            }
+            
         }
 
     }

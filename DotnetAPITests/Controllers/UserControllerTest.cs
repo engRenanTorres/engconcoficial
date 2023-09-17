@@ -61,8 +61,6 @@ namespace DotnetAPITests.Controllers
         [Fact]
         public async Task GetUser_NotFoundUser_ThrowsNotFound()
         {
-            var createUserDTO = new CreateUserDTO();
-
             A.CallTo(() => _userService.GetUser(1)).Returns(Task.FromResult<User?>(null));
 
             var actionResult = await _userController.GetUser(1);
@@ -79,8 +77,10 @@ namespace DotnetAPITests.Controllers
         [Fact]
         public async Task GetUsers_ReturnUsers()
         {
-            var users = new List<User>();
-            users.Add(_user);
+            var users = new List<User>
+            {
+                _user
+            };
             A.CallTo(() => _userService.GetAllUsers()).Returns(users);
 
             var result = await _userController.GetUsers();

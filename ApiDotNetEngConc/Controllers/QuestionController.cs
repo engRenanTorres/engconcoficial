@@ -52,7 +52,7 @@ public class QuestionController : ControllerBase
 
     return question != null ?
       Ok(question) :
-      NotFound("Question id: " + id + "not found");
+      NotFound("Question id: " + id + " not found");
   }
 
   [AllowAnonymous]
@@ -79,8 +79,8 @@ public class QuestionController : ControllerBase
     {
       if (ex is WarningException)
       {
-        _logger.LogError(ex, "Question not found while deleting.");
-        return NotFound("Question id: " + id + "not found");
+        _logger.LogError(ex, "Question not found while updating.");
+        return NotFound("Question id: " + id + " not found");
       }
       _logger.LogError(ex, "An error occurred while deleting the question.");
     }
@@ -106,7 +106,7 @@ public class QuestionController : ControllerBase
       if (ex is WarningException)
       {
         _logger.LogError(ex, "Question not found while deleting.");
-        return NotFound("Question id: " + id + "not found");
+        return NotFound("Question id: " + id + " not found");
       }
       _logger.LogError(ex, "An error occurred while deleting the question.");
     }
