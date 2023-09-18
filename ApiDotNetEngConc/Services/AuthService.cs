@@ -57,7 +57,7 @@ public class AuthService : IAuthService
   {
     if (createUserDTO.Email == null) throw new Exception("Email is Obrigatory!");
     if (createUserDTO.Password == null) throw new Exception("Password is Obrigatory!");
-    User? user = await _userRepository.GetSingleUserByEmail(createUserDTO.Email);
+    User? user = await _userService.GetUserByEmail(createUserDTO.Email);
     if (user != null) throw new Exception("User already exists.");
     byte[] passwordHash = _authHelper.PasswordHasher(createUserDTO.Password);
     user = new()

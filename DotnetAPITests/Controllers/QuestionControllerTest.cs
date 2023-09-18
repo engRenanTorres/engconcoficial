@@ -26,16 +26,6 @@ namespace DotnetAPITests.Controllers
         private readonly IQuestionService _questionService;
         private readonly ILogger<QuestionController> _logger;
         private readonly QuestionController _questionController;
-        private readonly User _user = new()
-        {
-            Id = 1,
-            Name = "Test User",
-            Email = "x@x.com",
-            Password = new byte[] { Convert.ToByte('p') },
-            Role = DotnetAPI.Enums.Roles.User,
-            Website = null,
-            SocialMedia = null,
-        };
         private readonly Question _question = new()
         {
             Id = 1,

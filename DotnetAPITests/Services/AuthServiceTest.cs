@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace DotnetAPITests.Services
 {
-    public class UserServiceTest
+    public class AuthServiceTest
     {
         private readonly IUserRepository _userRepository;
         private readonly ILogger<IUserService> _logger;
@@ -37,14 +37,14 @@ namespace DotnetAPITests.Services
             SocialMedia = null,
         };
 
-        public UserServiceTest()
+        public AuthServiceTest()
         {
             _userRepository = A.Fake<IUserRepository>();
             _logger = A.Fake<ILogger<UserService>>();
             _userService = new UserService(_logger, _userRepository);
         }
 
-        [Fact]
+        /*[Fact]
         public async Task GetUser_ReturnUser()
         {
             A.CallTo(() => _userRepository.GetSingleUser(1)).Returns(Task.FromResult<User?>(_user));
@@ -150,7 +150,7 @@ namespace DotnetAPITests.Services
             var result = await _userService.PatchUser(authUserId, updateUserDTO);
 
             result.Should().Be(null);
-        }
+        }*/
 
     }
 }

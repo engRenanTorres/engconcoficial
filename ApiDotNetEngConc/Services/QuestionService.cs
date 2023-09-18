@@ -8,27 +8,27 @@ namespace DotnetAPI.Services;
 
 public class QuestionService : IQuestionService
 {
-  private readonly ILogger<QuestionService> _logger;
+  private readonly ILogger<IQuestionService> _logger;
   private readonly IQuestionRepository _questionRepository;
-  private readonly IUserRepository _userRepository;
+  private readonly IUserService _userService;
 
   public QuestionService(
-    ILogger<QuestionService> logger,
+    ILogger<IQuestionService> logger,
     IQuestionRepository repository,
-    IUserRepository userRepository
+    IUserService userService
   )
   {
     _logger = logger;
     _questionRepository = repository;
-    _userRepository = userRepository;
+    _userService = userService;
   }
   async public Task<Question?> CreateQuestion(CreateQuestionDTO questionDTO, string userId)
   {
     _logger.LogInformation("CreateQuestion has been called.");
 
     User? user =
-      await _userRepository.GetSingleUser(int.Parse(userId))
-      ?? throw new WarningException("Not found user to create the question");
+      await _userService.GetUser(int.Parse(userId))
+      ?? throw new WarningException("Please login to create question");
 
     Question question = new()
     {
@@ -55,7 +55,7 @@ public class QuestionService : IQuestionService
 
     Question question =
       await _questionRepository.GetSingleQuestion(id)
-      ?? throw new WarningException("Question id: " + id + "not found");
+      ?? throw new WarningException("Question id: " + id + " not found");
 
     _questionRepository.RemoveEntity<Question>(question);
     return await _questionRepository.SaveChanges();
@@ -84,7 +84,7 @@ public class QuestionService : IQuestionService
     _logger.LogInformation("Patch QuestionService has been called.");
     Question question =
       await _questionRepository.GetSingleQuestion(id)
-      ?? throw new WarningException("Question id: " + id + "not found");
+      ?? throw new WarningException("Question id: " + id + " not found");
 
     if (updateQuestionDTO.Body != null) question.Body = updateQuestionDTO.Body;
     if (updateQuestionDTO.Answer != null) question.Answer = (char)updateQuestionDTO.Answer;

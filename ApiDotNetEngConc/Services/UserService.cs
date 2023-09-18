@@ -20,8 +20,7 @@ public class UserService : IUserService
   {
     _logger.LogInformation("Delete User Service has been called.");
 
-    User? user = await _userRepository.GetSingleUser(id)
-      ?? null;
+    User? user = await _userRepository.GetSingleUser(id);
     if (user == null) return null;
 
     _userRepository.RemoveEntity<User>(user);
@@ -49,11 +48,9 @@ public class UserService : IUserService
     return user;
   }
 
-  async public Task<User?> PatchUser(string? userId, [FromBody] UpdateUserDTO updateUserDTO)
+  async public Task<User?> PatchUser(string userId, [FromBody] UpdateUserDTO updateUserDTO)
   {
     _logger.LogInformation("PatchUsers has been called.");
-
-    if (userId == null) return null;
 
     User? user = await _userRepository.GetSingleUser(int.Parse(userId));
     if (user == null) return null;

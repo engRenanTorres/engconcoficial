@@ -44,7 +44,7 @@ namespace DotnetAPITests.Controllers
         }
 
         [Fact]
-        public async Task GetUser_ReturnUser()
+        public async Task GetUser_ReturnOkUser()
         {
             A.CallTo(() => _userService.GetUser(1)).Returns(Task.FromResult<User?>(_user));
 
@@ -75,7 +75,7 @@ namespace DotnetAPITests.Controllers
         }
 
         [Fact]
-        public async Task GetUsers_ReturnUsers()
+        public async Task GetUsers_ReturnOkUsers()
         {
             var users = new List<User>
             {
@@ -94,7 +94,7 @@ namespace DotnetAPITests.Controllers
         }
 
         [Fact]
-        public async Task PatchUser_ReturnUser()
+        public async Task PatchUser_ReturnOkUser()
         {
             var newUserData = new UpdateUserDTO()
             {
