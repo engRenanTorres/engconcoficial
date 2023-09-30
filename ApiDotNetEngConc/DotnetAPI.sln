@@ -5,7 +5,9 @@ VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetAPI", "DotnetAPI.csproj", "{CBC64218-FF59-41BA-835D-5DFBE80B85A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetAPITests", "..\DotnetAPITests\DotnetAPITests.csproj", "{1187CA2C-780F-4BD5-A06A-7EB857A7AE9C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetAPITests", "..\DotnetAPITests\DotnetAPITests.csproj", "{1187CA2C-780F-4BD5-A06A-7EB857A7AE9C}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "Fronted", "..\fronted\Fronted.esproj", "{77050EF1-B587-4967-98E4-2189ADEB9D17}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,12 @@ Global
 		{1187CA2C-780F-4BD5-A06A-7EB857A7AE9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1187CA2C-780F-4BD5-A06A-7EB857A7AE9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1187CA2C-780F-4BD5-A06A-7EB857A7AE9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77050EF1-B587-4967-98E4-2189ADEB9D17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77050EF1-B587-4967-98E4-2189ADEB9D17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77050EF1-B587-4967-98E4-2189ADEB9D17}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{77050EF1-B587-4967-98E4-2189ADEB9D17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77050EF1-B587-4967-98E4-2189ADEB9D17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77050EF1-B587-4967-98E4-2189ADEB9D17}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
