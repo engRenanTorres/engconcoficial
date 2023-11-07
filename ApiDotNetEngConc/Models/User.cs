@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using DotnetAPI.Enums;
+using DotnetAPI.Models.Inharitance;
 using Microsoft.EntityFrameworkCore;
 
 [Index(nameof(User.Email), IsUnique = true)]

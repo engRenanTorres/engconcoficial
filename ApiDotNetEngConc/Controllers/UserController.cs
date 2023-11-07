@@ -74,7 +74,7 @@ public class UserController : ControllerBase
     };
     throw new Exception("Error to delete User");
   }
-    public NotFoundObjectResult DefaultNotFound (int id)
+    protected NotFoundObjectResult DefaultNotFound (int id)
     {
         return NotFound("User id: " + id + " not found");
     }

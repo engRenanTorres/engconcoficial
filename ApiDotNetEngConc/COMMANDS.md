@@ -6,4 +6,7 @@ dotnet tool list -g (Lista as tools que voce tem em seu projeto ex. migrations)
 
 dotnet ef  (to see migration commands)
 
+dotnet tool install --global dotnet-ef
+
 dotnet ef migrations add InitialCreate -s API/ -p Persistence/
+dotnet ef database update

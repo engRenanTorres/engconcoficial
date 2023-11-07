@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetAPI", "DotnetAPI.cspr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetAPITests", "..\DotnetAPITests\DotnetAPITests.csproj", "{1187CA2C-780F-4BD5-A06A-7EB857A7AE9C}"
 EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "Fronted", "..\fronted\Fronted.esproj", "{77050EF1-B587-4967-98E4-2189ADEB9D17}"
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "Frontend", "..\fronted\Frontend.esproj", "{77050EF1-B587-4967-98E4-2189ADEB9D17}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
