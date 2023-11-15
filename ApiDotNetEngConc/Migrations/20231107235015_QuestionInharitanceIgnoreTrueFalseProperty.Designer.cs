@@ -3,6 +3,7 @@ using System;
 using DotnetAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DotnetAPI.Migrations
 {
     [DbContext(typeof(DataContextEF))]
-    partial class DataContextEFModelSnapshot : ModelSnapshot
+    [Migration("20231107235015_QuestionInharitanceIgnoreTrueFalseProperty")]
+    partial class QuestionInharitanceIgnoreTrueFalseProperty
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,6 +40,7 @@ namespace DotnetAPI.Migrations
                         .HasColumnType("character(1)");
 
                     b.Property<string>("Text")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -68,10 +72,6 @@ namespace DotnetAPI.Migrations
                     b.Property<int>("CreatedById")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("LastUpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("Last_updated_at");
@@ -85,9 +85,7 @@ namespace DotnetAPI.Migrations
 
                     b.ToTable("Questions");
 
-                    b.HasDiscriminator<string>("Discriminator").HasValue("BaseQuestion");
-
-                    b.UseTphMappingStrategy();
+                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("DotnetAPI.Models.User", b =>
@@ -135,14 +133,14 @@ namespace DotnetAPI.Migrations
                 {
                     b.HasBaseType("DotnetAPI.Models.Inharitance.BaseQuestion");
 
-                    b.HasDiscriminator().HasValue("BooleanQuestion");
+                    b.ToTable("Boolean_Questions", (string)null);
                 });
 
             modelBuilder.Entity("DotnetAPI.Models.MultipleChoicesQuestion", b =>
                 {
                     b.HasBaseType("DotnetAPI.Models.Inharitance.BaseQuestion");
 
-                    b.HasDiscriminator().HasValue("MultipleChoicesQuestion");
+                    b.ToTable("Muliple_Choice_Questions", (string)null);
                 });
 
             modelBuilder.Entity("DotnetAPI.Models.Choice", b =>
@@ -161,6 +159,24 @@ namespace DotnetAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("CreatedBy");
+                });
+
+            modelBuilder.Entity("DotnetAPI.Models.BooleanQuestion", b =>
+                {
+                    b.HasOne("DotnetAPI.Models.Inharitance.BaseQuestion", null)
+                        .WithOne()
+                        .HasForeignKey("DotnetAPI.Models.BooleanQuestion", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DotnetAPI.Models.MultipleChoicesQuestion", b =>
+                {
+                    b.HasOne("DotnetAPI.Models.Inharitance.BaseQuestion", null)
+                        .WithOne()
+                        .HasForeignKey("DotnetAPI.Models.MultipleChoicesQuestion", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DotnetAPI.Models.Inharitance.BaseQuestion", b =>

@@ -1,3 +1,4 @@
+using DotnetAPI.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace DotnetAPI.DTOs;
@@ -11,4 +12,5 @@ public class CreateQuestionDTO
     public string Answer { get; set; } = "A";
 
     public string? Tip { get; set; }
+    public ICollection<Choice>? Choices { get; set; }
 }

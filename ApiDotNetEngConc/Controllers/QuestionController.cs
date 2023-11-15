@@ -1,10 +1,10 @@
 
-using System.ComponentModel;
 using DotnetAPI.DTOs;
-using DotnetAPI.Models;
+using DotnetAPI.Models.Inharitance;
 using DotnetAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel;
 
 
 namespace DotnetAPI.Controllers;
@@ -14,103 +14,104 @@ namespace DotnetAPI.Controllers;
 [Authorize]
 public class QuestionController : ControllerBase
 {
-  private readonly ILogger<QuestionController> _logger;
-  private readonly IQuestionService _questionService;
+    private readonly ILogger<QuestionController> _logger;
+    private readonly IQuestionService _questionService;
 
-  public QuestionController(
-    ILogger<QuestionController> logger,
-    IQuestionService questionService
-  )
-  {
-    _logger = logger;
-    _questionService = questionService;
-  }
-
-  [HttpPost("")]
-  public async Task<ActionResult<Question>> CreateQuestion(CreateQuestionDTO questionDTO)
-  {
-    _logger.LogInformation("CreateQuestion has been called.");
-
-    if (questionDTO == null) return BadRequest("Question data is null.");
-    string? userId = User?.FindFirst("userId")?.Value;
-    if (userId == null) return NotFound("Please log a user");
-    Question? question =
-      await _questionService.CreateQuestion(questionDTO, userId);
-    return question != null ?
-    CreatedAtAction("QuestionController",question) :
-    BadRequest("Question has Not been Created");
-
-  }
-
-  [AllowAnonymous]
-  [HttpGet("{id}")]
-  public async Task<ActionResult<Question>> GetQuestion(int id)
-  {
-    _logger.LogInformation("GetQuestion has been called.");
-
-    Question? question = await _questionService.GetQuestion(id);
-
-    return question != null ?
-      Ok(question) :
-      NotFound("Question id: " + id + " not found");
-  }
-
-  [AllowAnonymous]
-  [HttpGet("")]
-  public async Task<ActionResult<IEnumerable<Question>>> GetQuestions()
-  {
-    _logger.LogInformation("GetQuestions has been called.");
-    IEnumerable<Question?> questions = await _questionService.GetAllQuestions();
-
-    return Ok(questions);
-  }
-
-  [HttpPatch("{id}")]
-  public async Task<ActionResult<Question>> PatchQuestion(int id, [FromBody] UpdateQuestionDTO updateQuestionDTO)
-  {
-    _logger.LogInformation("PatchQuestions has been called.");
-    try
+    public QuestionController(
+      ILogger<QuestionController> logger,
+      IQuestionService questionService
+    )
     {
-      var updatedQuestion = await _questionService.PatchQuestion(id, updateQuestionDTO);
-
-      return Ok(updatedQuestion);
+        _logger = logger;
+        _questionService = questionService;
     }
-    catch (Exception ex)
+
+
+    [AllowAnonymous]
+    [HttpGet("{id}")]
+    [ActionName("GetQuestion")]
+    public async Task<ActionResult<BaseQuestion>> GetQuestion(int id)
     {
-      if (ex is WarningException)
-      {
-        _logger.LogError(ex, "Question not found while updating.");
-        return NotFound("Question id: " + id + " not found");
-      }
-      _logger.LogError(ex, "An error occurred while deleting the question.");
+        _logger.LogInformation("GetQuestion has been called.");
+
+        BaseQuestion? question = await _questionService.GetQuestion(id);
+
+        return question != null ?
+          Ok(question) :
+          NotFound("Question id: " + id + " not found");
     }
-    throw new Exception("Error to delete Question");
-  }
 
-
-  [HttpDelete("{id}")]
-  public async Task<ActionResult> DeleteQuestion(int id)
-  {
-    _logger.LogInformation("Delete Question Controller has been called.");
-
-    try
+    [AllowAnonymous]
+    [HttpGet("")]
+    public async Task<ActionResult<IEnumerable<BaseQuestion>>> GetQuestions()
     {
-      var deleteQuestion = await _questionService.DeleteQuestion(id);
-      if (deleteQuestion)
-      {
-        return NoContent();
-      };
+        _logger.LogInformation("GetQuestions has been called.");
+        IEnumerable<BaseQuestion?> questions = await _questionService.GetAllQuestions();
+
+        return Ok(questions);
     }
-    catch (Exception ex)
+
+    [HttpPost("")]
+    public async Task<ActionResult<BaseQuestion>> CreateQuestion(CreateQuestionDTO questionDTO)
     {
-      if (ex is WarningException)
-      {
-        _logger.LogError(ex, "Question not found while deleting.");
-        return NotFound("Question id: " + id + " not found");
-      }
-      _logger.LogError(ex, "An error occurred while deleting the question.");
+        _logger.LogInformation("CreateQuestion has been called.");
+
+        if (questionDTO == null) return BadRequest("Question data is null.");
+        string? userId = User?.FindFirst("userId")?.Value;
+        if (userId == null) return NotFound("Please log a user");
+        BaseQuestion? question =
+        await _questionService.CreateQuestionOrThrow(questionDTO, userId);
+        var actionName = nameof(GetQuestions);
+        var routeValues = "";
+        return CreatedAtAction(actionName,routeValues, question);
     }
-    throw new Exception("Error to delete Question");
-  }
+
+    [HttpPatch("{id}")]
+    public async Task<ActionResult<BaseQuestion>> PatchQuestion(int id, [FromBody] UpdateQuestionDTO updateQuestionDTO)
+    {
+        _logger.LogInformation("PatchQuestions has been called.");
+        try
+        {
+            var updatedQuestion = await _questionService.PatchQuestion(id, updateQuestionDTO);
+
+            return Ok(updatedQuestion);
+        }
+        catch (Exception ex)
+        {
+            if (ex is WarningException)
+            {
+                _logger.LogError(ex, "Question not found while updating.");
+                return NotFound("Question id: " + id + " not found");
+            }
+            _logger.LogError(ex, "An error occurred while deleting the question.");
+        }
+        throw new Exception("Error to delete Question");
+    }
+
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteQuestion(int id)
+    {
+        _logger.LogInformation("Delete Question Controller has been called.");
+
+        try
+        {
+            var deleteQuestion = await _questionService.DeleteQuestion(id);
+            if (deleteQuestion)
+            {
+                return NoContent();
+            };
+        }
+        catch (Exception ex)
+        {
+            if (ex is WarningException)
+            {
+                _logger.LogError(ex, "Question not found while deleting.");
+                return NotFound("Question id: " + id + " not found");
+            }
+            _logger.LogError(ex, "An error occurred while deleting the question.");
+        }
+        throw new Exception("Error to delete Question");
+    }
 }
 

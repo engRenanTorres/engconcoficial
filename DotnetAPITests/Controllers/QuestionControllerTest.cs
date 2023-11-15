@@ -1,23 +1,14 @@
 ﻿
 using DotnetAPI.Controllers;
 using DotnetAPI.DTOs;
-using DotnetAPI.Helpers;
 using DotnetAPI.Models;
+using DotnetAPI.Models.Inharitance;
 using DotnetAPI.Services;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Net;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DotnetAPITests.Controllers
 {
@@ -26,7 +17,7 @@ namespace DotnetAPITests.Controllers
         private readonly IQuestionService _questionService;
         private readonly ILogger<QuestionController> _logger;
         private readonly QuestionController _questionController;
-        private readonly Question _question = new()
+        private readonly MultipleChoicesQuestion _question = new()
         {
             Id = 1,
             CreatedAt = new DateTime(2020, 07, 02, 22, 59, 59),
@@ -51,8 +42,8 @@ namespace DotnetAPITests.Controllers
             var newQuestion = new CreateQuestionDTO()
             {
                 Body = "This is a quetion Test?",
-                Answer= "A",
-                Tip= "A",
+                Answer = "A",
+                Tip = "A",
             };
             var authUserId = "1";
             var httpContext = new DefaultHttpContext();
@@ -64,7 +55,7 @@ namespace DotnetAPITests.Controllers
             _questionController.ControllerContext.HttpContext = httpContext;
 
 
-            A.CallTo(() => _questionService.CreateQuestion(newQuestion,authUserId)).Returns(Task.FromResult<Question?>(_question));
+            A.CallTo(() => _questionService.CreateQuestionOrThrow(newQuestion, authUserId)).Returns(Task.FromResult<BaseQuestion?>(_question));
 
             var result = await _questionController.CreateQuestion(newQuestion);
 
@@ -120,7 +111,7 @@ namespace DotnetAPITests.Controllers
             _questionController.ControllerContext.HttpContext = httpContext;
             var createQuestionDTO = new CreateQuestionDTO();
 
-            A.CallTo(() => _questionService.CreateQuestion(createQuestionDTO, "1")).Returns(Task.FromResult<Question?>(null));
+            A.CallTo(() => _questionService.CreateQuestionOrThrow(createQuestionDTO, "1")).Returns(Task.FromResult<BaseQuestion?>(null));
 
             var actionResult = await _questionController.CreateQuestion(createQuestionDTO);
 
@@ -138,7 +129,7 @@ namespace DotnetAPITests.Controllers
         [Fact]
         public async Task GetQuestion_ReturnQuestion()
         {
-            A.CallTo(() => _questionService.GetQuestion(1)).Returns(Task.FromResult<Question?>(_question));
+            A.CallTo(() => _questionService.GetQuestion(1)).Returns(Task.FromResult<BaseQuestion?>(_question));
 
             var result = await _questionController.GetQuestion(1);
 
@@ -153,7 +144,7 @@ namespace DotnetAPITests.Controllers
         [Fact]
         public async Task GetQuestion_NotFoundQuestion_ThrowsNotFound()
         {
-            A.CallTo(() => _questionService.GetQuestion(1)).Returns(Task.FromResult<Question?>(null));
+            A.CallTo(() => _questionService.GetQuestion(1)).Returns(Task.FromResult<BaseQuestion?>(null));
 
             var actionResult = await _questionController.GetQuestion(1);
 
@@ -169,11 +160,11 @@ namespace DotnetAPITests.Controllers
         [Fact]
         public async Task GetQuestions_ReturnQuesitons()
         {
-            var questions = new List<Question>
+            var questions = new List<MultipleChoicesQuestion>
             {
                 _question
             };
-            A.CallTo(() => _questionService.GetAllQuestions()).Returns(Task.FromResult<IEnumerable<Question>>(questions));
+            A.CallTo(() => _questionService.GetAllQuestions()).Returns(Task.FromResult<IEnumerable<BaseQuestion>>(questions));
 
             var result = await _questionController.GetQuestions();
 
@@ -200,9 +191,9 @@ namespace DotnetAPITests.Controllers
 
 
             A.CallTo(() => _questionService.PatchQuestion(1, newUserData))
-                .Returns(Task.FromResult<Question?>(_question));
+                .Returns(Task.FromResult<BaseQuestion?>(_question));
 
-            var result = await _questionController.PatchQuestion(1,newUserData);
+            var result = await _questionController.PatchQuestion(1, newUserData);
 
             result.Result.Should().BeOfType<OkObjectResult>();
             var createdResult = result.Result as OkObjectResult;
@@ -217,7 +208,7 @@ namespace DotnetAPITests.Controllers
         {
             var authUserId = 1;
 
-            A.CallTo(() => _questionService.DeleteQuestion(1))                
+            A.CallTo(() => _questionService.DeleteQuestion(1))
                 .Returns(true);
 
             var result = await _questionController.DeleteQuestion(authUserId);
@@ -238,12 +229,12 @@ namespace DotnetAPITests.Controllers
             var result = await _questionController.DeleteQuestion(1);
 
             // Assert
-            result.Should().BeOfType<NotFoundObjectResult>(); 
+            result.Should().BeOfType<NotFoundObjectResult>();
             var notFoundResult = (NotFoundObjectResult)result;
 
-            notFoundResult.StatusCode.Should().Be(404); 
+            notFoundResult.StatusCode.Should().Be(404);
 
-            notFoundResult.Value.Should().Be("Question id: 1 not found"); 
+            notFoundResult.Value.Should().Be("Question id: 1 not found");
         }
 
         [Fact]
@@ -256,13 +247,14 @@ namespace DotnetAPITests.Controllers
             {
                 var result = await _questionController.DeleteQuestion(1);
 
-            } catch (Exception result)
+            }
+            catch (Exception result)
             {
                 result.Should().BeOfType<Exception>();
                 result.Message.Should()
                     .Be("Error to delete Question");
             }
-            
+
         }
 
     }

@@ -1,8 +1,8 @@
 namespace DotnetAPI.Enums
 {
-  public enum Roles
-  {
-    User, Staff, Adm
+    public enum Roles
+    {
+        User, Staff, Adm
 
-  }
+    }
 }

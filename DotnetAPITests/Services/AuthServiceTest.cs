@@ -1,23 +1,7 @@
-﻿
-using DotnetAPI.Controllers;
-using DotnetAPI.Data.Repositories;
-using DotnetAPI.DTOs;
-using DotnetAPI.Helpers;
+﻿using DotnetAPI.Data.Repositories;
 using DotnetAPI.Models;
 using DotnetAPI.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Net;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DotnetAPITests.Services
 {

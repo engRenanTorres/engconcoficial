@@ -1,10 +1,11 @@
 namespace DotnetAPI.Models;
+using DotnetAPI.Enums;
+using DotnetAPI.Models.Inharitance;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using DotnetAPI.Enums;
-using DotnetAPI.Models.Inharitance;
-using Microsoft.EntityFrameworkCore;
 
 [Index(nameof(User.Email), IsUnique = true)]
 public class User : Contactable
@@ -17,7 +18,13 @@ public class User : Contactable
     public string Name { get; set; } = "";
     public required byte[] Password { get; set; }
     [JsonIgnore]
-    public ICollection<Question>? Questions { get; set; }
+    public ICollection<BaseQuestion>? Questions { get; set; }
     public Roles Role { get; set; } = Roles.User;
+}
+
+public class EmailQueryParam
+{
+    [BindRequired]
+    public required string Email { get; set; }
 }
 

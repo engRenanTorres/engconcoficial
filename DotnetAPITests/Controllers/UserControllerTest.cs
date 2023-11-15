@@ -1,22 +1,12 @@
 ﻿
 using DotnetAPI.Controllers;
 using DotnetAPI.DTOs;
-using DotnetAPI.Helpers;
 using DotnetAPI.Models;
 using DotnetAPI.Services;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Net;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DotnetAPITests.Controllers
 {
@@ -48,7 +38,7 @@ namespace DotnetAPITests.Controllers
         {
             A.CallTo(() => _userService.GetUser(1)).Returns(Task.FromResult<User?>(_user));
 
-            var result = await _userController.GetUser(1);
+            var result = await _userController.GetUserById(1);
 
             result.Result.Should().BeOfType<OkObjectResult>();
             var createdResult = result.Result as OkObjectResult;
@@ -63,7 +53,7 @@ namespace DotnetAPITests.Controllers
         {
             A.CallTo(() => _userService.GetUser(1)).Returns(Task.FromResult<User?>(null));
 
-            var actionResult = await _userController.GetUser(1);
+            var actionResult = await _userController.GetUserById(1);
 
             actionResult.Result.Should().NotBeNull();
             actionResult.Result.Should().BeOfType<NotFoundObjectResult>();
@@ -72,6 +62,36 @@ namespace DotnetAPITests.Controllers
             badRequestResult?.StatusCode.Should().Be(404);
 
             badRequestResult?.Value.Should().Be("User id: 1 not found");
+        }
+        [Fact]
+        public async Task GetUserByEmail_ReturnOkUser()
+        {
+            A.CallTo(() => _userService.GetUserByEmail("email@gmail.com")).Returns(Task.FromResult<User?>(_user));
+
+            var result = await _userController.GetUserByEmail("email@gmail.com");
+
+            result.Result.Should().BeOfType<OkObjectResult>();
+            var createdResult = result.Result as OkObjectResult;
+
+            createdResult?.StatusCode.Should().Be(StatusCodes.Status200OK);
+
+            createdResult?.Value.Should().BeSameAs(_user);
+        }
+
+        [Fact]
+        public async Task GetUserByEmail_NotFoundUser_ThrowsNotFound()
+        {
+            A.CallTo(() => _userService.GetUserByEmail("email@gmail.com")).Returns(Task.FromResult<User?>(null));
+
+            var actionResult = await _userController.GetUserByEmail("email@gmail.com");
+
+            actionResult.Result.Should().NotBeNull();
+            actionResult.Result.Should().BeOfType<NotFoundObjectResult>();
+            var badRequestResult = actionResult.Result as NotFoundObjectResult;
+
+            badRequestResult?.StatusCode.Should().Be(404);
+
+            badRequestResult?.Value.Should().Be("User email: email@gmail.com not found");
         }
 
         [Fact]
@@ -126,7 +146,7 @@ namespace DotnetAPITests.Controllers
         public async Task PatchUser_InvalidUserId_ThrowsNotFound()
         {
             var updateUserDTO = new UpdateUserDTO();
-            A.CallTo(() => _userService.PatchUser("1",updateUserDTO)).Returns(Task.FromResult<User?>(null));
+            A.CallTo(() => _userService.PatchUser("1", updateUserDTO)).Returns(Task.FromResult<User?>(null));
 
             var actionResult = await _userController.PatchUser(updateUserDTO);
 
@@ -173,7 +193,7 @@ namespace DotnetAPITests.Controllers
 
             var result = await _userController.DeleteUser(authUserId);
 
-   
+
             var createdResult = result as NoContentResult;
 
             createdResult?.StatusCode.Should().Be(StatusCodes.Status204NoContent);

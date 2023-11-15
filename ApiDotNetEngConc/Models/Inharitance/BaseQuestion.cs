@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DotnetAPI.Models.Inharitance
 {
@@ -18,9 +18,9 @@ namespace DotnetAPI.Models.Inharitance
 
         public string? Tip { get; set; } = "";
         public int CreatedById { get; set; }
-  
+
         public User? CreatedBy { get; set; }
 
-        public virtual Dictionary<string, string> Choices { get; set; }
+        public virtual ICollection<Choice> Choices { get; set; }
     }
 }

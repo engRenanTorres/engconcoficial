@@ -8,13 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DotnetAPITests.Controllers
 {
@@ -119,11 +113,11 @@ namespace DotnetAPITests.Controllers
             okResult?.StatusCode.Should().Be(200);
 
             okResult?.Value.Should().BeOfType<Dictionary<string, string>>();
-            var tokenData = 
-                okResult?.Value as Dictionary<string, string> ?? 
+            var tokenData =
+                okResult?.Value as Dictionary<string, string> ??
                 new Dictionary<string, string> { { "", "" } };
 
-            tokenData.Should().ContainKey("token"); 
+            tokenData.Should().ContainKey("token");
             tokenData["token"].Should().Be(fakeToken);
         }
 
@@ -134,9 +128,9 @@ namespace DotnetAPITests.Controllers
 
             A.CallTo(() => _authService.Login(A<LoginDTO>._)).Returns(Task.FromResult<string?>(null));
             var actionResult = await _authController.Login(loginDTO);
-            
-            actionResult.Result.Should().NotBeNull(); 
-            actionResult.Result.Should().BeOfType<BadRequestObjectResult>(); 
+
+            actionResult.Result.Should().NotBeNull();
+            actionResult.Result.Should().BeOfType<BadRequestObjectResult>();
             var badRequestResult = actionResult.Result as BadRequestObjectResult;
 
             badRequestResult?.StatusCode.Should().Be(400);
@@ -157,37 +151,37 @@ namespace DotnetAPITests.Controllers
             var httpContext = new DefaultHttpContext();
             var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
-            new Claim("UserId", "1") 
+            new Claim("UserId", "1")
             }));
             httpContext.User = userClaims;
             _authController.ControllerContext.HttpContext = httpContext;
 
-            var authUserId = "1"; 
+            var authUserId = "1";
             var fakeToken = "fake-token";
 
-            A.CallTo(() => _userService.GetUser(1)).Returns(Task.FromResult(_user)); 
-            A.CallTo(() => _authService.RefreshToken(authUserId, _user.Role)).Returns(fakeToken); 
+            A.CallTo(() => _userService.GetUser(1)).Returns(Task.FromResult(_user));
+            A.CallTo(() => _authService.RefreshToken(authUserId, _user.Role)).Returns(fakeToken);
 
             var result = await _authController.RefreshToken();
 
 
-            result.Should().BeOfType<OkObjectResult>(); 
+            result.Should().BeOfType<OkObjectResult>();
             var okResult = (OkObjectResult)result;
 
-            okResult.StatusCode.Should().Be(200); 
+            okResult.StatusCode.Should().Be(200);
 
-            okResult.Value.Should().BeOfType<Dictionary<string, string>>(); 
-            var tokenData = okResult.Value 
+            okResult.Value.Should().BeOfType<Dictionary<string, string>>();
+            var tokenData = okResult.Value
                 as Dictionary<string, string> ??
                 new Dictionary<string, string> { { "", "" } };
 
-            tokenData.Should().ContainKey("token"); 
+            tokenData.Should().ContainKey("token");
             tokenData["token"].Should().Be(fakeToken);
         }
 
         [Fact]
         public async Task RefreshToken_InvalidUserId_ReturnsBadRequest()
-        { 
+        {
             var httpContext = new DefaultHttpContext();
             _authController.ControllerContext.HttpContext = httpContext;
             // Act
@@ -197,7 +191,7 @@ namespace DotnetAPITests.Controllers
             result.Should().BeOfType<BadRequestObjectResult>();
             var badRequestResult = (BadRequestObjectResult)result;
 
-            badRequestResult.StatusCode.Should().Be(400); 
+            badRequestResult.StatusCode.Should().Be(400);
 
             badRequestResult.Value.Should().Be("UserId cannot be converted into int type");
         }
@@ -208,21 +202,21 @@ namespace DotnetAPITests.Controllers
             var httpContext = new DefaultHttpContext();
             var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
-            new Claim("UserId", "1") 
+            new Claim("UserId", "1")
             }));
             httpContext.User = userClaims;
             _authController.ControllerContext.HttpContext = httpContext;
 
-            A.CallTo(() => _userService.GetUser(1)).Returns(Task.FromResult<User?>(null)); 
+            A.CallTo(() => _userService.GetUser(1)).Returns(Task.FromResult<User?>(null));
 
             var result = await _authController.RefreshToken();
 
             result.Should().BeOfType<BadRequestObjectResult>();
             var badRequestResult = (BadRequestObjectResult)result;
 
-            badRequestResult.StatusCode.Should().Be(400); 
+            badRequestResult.StatusCode.Should().Be(400);
 
-            badRequestResult.Value.Should().Be("User does not exist"); 
+            badRequestResult.Value.Should().Be("User does not exist");
         }
 
 
@@ -232,19 +226,19 @@ namespace DotnetAPITests.Controllers
             var httpContext = new DefaultHttpContext();
             var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
-            new Claim("UserId", "1") 
+            new Claim("UserId", "1")
             }));
             httpContext.User = userClaims;
             _authController.ControllerContext.HttpContext = httpContext;
 
-            var authUserId = "1"; 
+            var authUserId = "1";
 
             A.CallTo(() => _userService.GetUser(1)).Returns(Task.FromResult(_user));
-            A.CallTo(() => _authService.RefreshToken(authUserId, _user.Role)).Returns<string?>(null); 
+            A.CallTo(() => _authService.RefreshToken(authUserId, _user.Role)).Returns<string?>(null);
 
             var result = await _authController.RefreshToken();
 
-            result.Should().BeOfType<NotFoundResult>(); 
+            result.Should().BeOfType<NotFoundResult>();
         }
 
     }

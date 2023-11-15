@@ -1,24 +1,10 @@
-﻿
-using DotnetAPI.Controllers;
-using DotnetAPI.Data.Repositories;
+﻿using DotnetAPI.Data.Repositories;
 using DotnetAPI.DTOs;
-using DotnetAPI.Helpers;
 using DotnetAPI.Models;
+using DotnetAPI.Models.Inharitance;
 using DotnetAPI.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Net;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DotnetAPITests.Services
 {
@@ -28,7 +14,7 @@ namespace DotnetAPITests.Services
         private readonly IUserService _userService;
         private readonly ILogger<IQuestionService> _logger;
         private readonly QuestionService _questionService;
-        private readonly Question _question = new()
+        private readonly MultipleChoicesQuestion _question = new()
         {
             Id = 1,
             CreatedAt = new DateTime(2020, 07, 02, 22, 59, 59),
@@ -53,18 +39,18 @@ namespace DotnetAPITests.Services
         public async Task GetQuestion_BDContainTheQuestion_ShouldReturnQuestion()
         {
             var id = 1;
-            A.CallTo(() => _questionRepository.GetSingleQuestion(id)).Returns(Task.FromResult<Question?>(_question));
+            A.CallTo(() => _questionRepository.GetSingleQuestion(id)).Returns(Task.FromResult<BaseQuestion?>(_question));
 
             var result = await _questionService.GetQuestion(id);
 
-            result?.Should().BeOfType<Question>();
+            result?.Should().BeOfType<MultipleChoicesQuestion>();
             result?.Should().BeSameAs(_question);
         }
 
         [Fact]
         public async Task GetAllQuestion_BDContainTheQuestion_ShouldReturnQuestions()
         {
-            var questions = new List<Question>
+            var questions = new List<MultipleChoicesQuestion>
             {
                 _question
             };
@@ -72,7 +58,7 @@ namespace DotnetAPITests.Services
 
             var result = await _questionService.GetAllQuestions();
 
-            result?.Should().BeOfType<List<Question>>();
+            result?.Should().BeOfType<List<MultipleChoicesQuestion>>();
 
             result?.Should().BeSameAs(questions);
         }
@@ -82,7 +68,7 @@ namespace DotnetAPITests.Services
         {
             var questionId = 1;
 
-            A.CallTo(() => _questionRepository.GetSingleQuestion(questionId)).Returns(Task.FromResult<Question?>(_question));
+            A.CallTo(() => _questionRepository.GetSingleQuestion(questionId)).Returns(Task.FromResult<BaseQuestion?>(_question));
             A.CallTo(() => _questionRepository.RemoveEntity(_question));
             A.CallTo(() => _questionRepository.SaveChanges()).Returns(Task.FromResult<bool>(true));
 
@@ -96,7 +82,7 @@ namespace DotnetAPITests.Services
         {
             var questionId = 1;
 
-            A.CallTo(() => _questionRepository.GetSingleQuestion(questionId)).Returns(Task.FromResult<Question?>(null));
+            A.CallTo(() => _questionRepository.GetSingleQuestion(questionId)).Returns(Task.FromResult<BaseQuestion?>(null));
 
             try
             {
@@ -117,7 +103,7 @@ namespace DotnetAPITests.Services
 
             A.CallTo(() => _questionRepository
                 .GetSingleQuestion(authUserId))
-                .Returns(Task.FromResult<Question?>(null));
+                .Returns(Task.FromResult<BaseQuestion?>(null));
             A.CallTo(() => _questionRepository.RemoveEntity(_question));
             A.CallTo(() => _questionRepository
                 .SaveChanges()).Returns(Task.FromResult<bool>(false));
@@ -135,7 +121,7 @@ namespace DotnetAPITests.Services
 
             A.CallTo(() => _questionRepository
                 .GetSingleQuestion(questionId))
-                .Returns(Task.FromResult<Question?>(_question));
+                .Returns(Task.FromResult<BaseQuestion?>(_question));
             A.CallTo(() => _questionRepository
                 .SaveChanges()).Returns(Task.FromResult<bool>(true));
 
@@ -154,13 +140,13 @@ namespace DotnetAPITests.Services
             var quesitonId = 1;
 
             A.CallTo(() => _questionRepository.GetSingleQuestion(quesitonId))
-                .Returns(Task.FromResult<Question?>(null));
+                .Returns(Task.FromResult<BaseQuestion?>(null));
             try
             {
-            var result = await _questionService
-                .PatchQuestion(quesitonId, updateQuestionDTO);
+                var result = await _questionService
+                    .PatchQuestion(quesitonId, updateQuestionDTO);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 ex.Should().BeOfType<WarningException>();
             }
@@ -197,7 +183,7 @@ namespace DotnetAPITests.Services
 
 
             var result = await _questionService
-                .CreateQuestion(questionDTO, userId);
+                .CreateQuestionOrThrow(questionDTO, userId);
 
             result?.Answer.Should().Be(_question.Answer);
             result?.Body.Should().Be(_question.Body);

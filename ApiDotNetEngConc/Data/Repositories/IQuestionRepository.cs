@@ -1,11 +1,12 @@
-using DotnetAPI.Models;
+using DotnetAPI.DTOs;
+using DotnetAPI.Models.Inharitance;
 
 namespace DotnetAPI.Data.Repositories;
 public interface IQuestionRepository
 {
-  public Task<bool> SaveChanges();
-  public void AddEntity<T>(T entity);
-  public void RemoveEntity<T>(T entity);
-  public Task<IEnumerable<Question?>> GetAllQuestions();
-  public Task<Question?> GetSingleQuestion(int id);
+    public Task<bool> SaveChanges();
+    public void AddEntity<BaseQuestion>(BaseQuestion entity);
+    public void RemoveEntity<BaseQuestion>(BaseQuestion entity);
+    public Task<IEnumerable<BaseQuestion?>> GetAllQuestions();
+    public Task<BaseQuestion?> GetSingleQuestion(int id);
 }
